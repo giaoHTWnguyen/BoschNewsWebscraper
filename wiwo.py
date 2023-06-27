@@ -2,7 +2,18 @@ from bs4 import BeautifulSoup
 import json
 from collections import deque
 import requests
-import unicodedata
+import pyodbc
+
+
+#Connect to SQL Server database
+
+
+myServerAddress ='PC-Giao'
+database = 'wiwo_table'
+connection_string = 'Server={myServerAddress};Database={myDataBase};Trusted_Connection=True;'
+
+
+
 
 
 base_url = 'https://www.wiwo.de/unternehmen/auto/'
@@ -52,35 +63,38 @@ def get_stripped_text(element): #https://beautiful-soup-4.readthedocs.io/en/late
         return None
 
 
-for article in articles:
+try:
+    for article in articles:
 
-    title_element = article.find('h3', {"class" : 'c-headline'})
-    title = get_stripped_text(title_element)
+        title_element = article.find('h3', {"class" : 'c-headline'})
+        title = get_stripped_text(title_element)
 
-    url_element = article.find('a', {"class" : 'c-teaser__link'})
-    url = base_url + url_element['href'] if url_element else None
+        url_element = article.find('a', {"class" : 'c-teaser__link'})
+        url = base_url + url_element['href'] if url_element else None
 
-    overline_text_element = article.find('span', {"class" : 'c-overline'})
-    overlineText = get_stripped_text(overline_text_element)
+        overline_text_element = article.find('span', {"class" : 'c-overline'})
+        overlineText = get_stripped_text(overline_text_element)
 
-    headline_text_element = article.find('span', {"class" : 'js-headline'})
-    headlineText = get_stripped_text(headline_text_element)
-
-
-    author_element = article.find('div', {"class" : 'c-teaser__authors'})
-    author = get_stripped_text(author_element)
+        headline_text_element = article.find('span', {"class" : 'js-headline'})
+        headlineText = get_stripped_text(headline_text_element)
 
 
-    # Create dictionary with extracted data
-    article_data = {
-        "Title": title,
-        "URL": url,
-        "Overline": overlineText,
-        "Headline": headlineText,
-        "Author": author
-    }
+        author_element = article.find('div', {"class" : 'c-teaser__authors'})
+        author = get_stripped_text(author_element)
 
-    article_dict.append(article_data)
+
+        # Create dictionary with extracted data
+        article_data = {
+            "Title": title,
+            "URL": url,
+            "Overline": overlineText,
+            "Headline": headlineText,
+            "Author": author
+        }
+
+        article_dict.append(article_data)
+except Exception as e:
+    article = None
 
 # Print the extracted data in a nested dictionary format
 for article in article_dict:
