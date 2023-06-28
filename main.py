@@ -1,5 +1,8 @@
 #Entry point of program
 ###import modules and classes
+from database import configs
+from database import db
+from database import articleData
 
 #functions
 
@@ -29,19 +32,23 @@ def close_session():
 
 # Close the session
 
-from database.db import connect_db
+#from database.db import connect_db
 
 try:
-    connection = connect_db
 
-    print("Cpmmected tp the database")
-
+    ###https://www.sqlnethub.com/blog/how-to-resolve-im002-microsoftodbc-driver-manager-data-source-name-not-found-and-no-default-driver-specified-0-sqldriverconnect/
+    connection = db.connect_db()
+    print("Connect to the database")
+    sites = db.queryData(connection, "SELECT Id, Name, URL, Module, Method, Configs FROM dbo.Sites WHERE Active = 1")
+    print(sites)
+    
 except Exception as ex:
     print("Error: " + str(ex))
 
 finally:
 
     connection.close()
+    print("done.")
 
 
 #Generate Session ID

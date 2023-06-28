@@ -1,19 +1,34 @@
 import pyodbc
-import configs  
+from database import configs  
 
 def connect_db():
-    connection_string = 'Driver={{SQL Server Native Client 11.0}};Server={configs.db_server};Database={configs.db_database};'
-
+    connection_string = f'Driver={configs.db_driver};Server={configs.db_server};Database={configs.db_database};'
     if not configs.db_username:
         connection_string += 'Trusted_Connection=Yes;'
     else:
-        connection_string += 'uid={configs.db_username};pwd={configs.db_password};'
+        connection_string += f'uid={configs.db_username};pwd={configs.db_password};'
     connection_string += configs.db_extras
+    #print (connection_string)
     connection = pyodbc.connect(connection_string)
     return connection
 
-def selectdata(sql):
-    return ''
+def getSqlValue(value, withDelimiter: bool):
+    if value is None:
+        return 'NULL'
+    value = value.strip().replace("'", "''").replace('\n', "' + CHAR(10) + '").replace('\r', "' + CHAR(13) + '").replace('\t', "' + CHAR(9) + '") #prevent sql injection
+    if withDelimiter:
+        value = "'" + value + "'"
+    return value
+
+def getSqlCommand(sql: str, **kwargs):
+    for a in kwargs:
+        sql = sql.replace("%<{a}>%", getSqlValue(kwargs[a], a.startswith('_')))
+    return sql
+
+def queryData(connection, sql: str):
+    with connection.cursor() as crs:
+        crs.execute(sql)
+        return crs.fetchall()
 
 ###functions
 
