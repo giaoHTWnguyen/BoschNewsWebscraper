@@ -1,0 +1,5 @@
+db_server = '.'
+db_database = 'WebScraper'
+db_username = ''
+db_password = ''
+db_extras = ''

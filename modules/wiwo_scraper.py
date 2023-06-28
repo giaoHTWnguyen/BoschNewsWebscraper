@@ -3,14 +3,20 @@ import json
 from collections import deque
 import requests
 import pyodbc
+import csv
+
+#Create a class Wiwoscraper and inizialize it
+
 
 
 #Connect to SQL Server database
 
 
-myServerAddress ='PC-Giao'
-database = 'wiwo_table'
-connection_string = 'Server={myServerAddress};Database={myDataBase};Trusted_Connection=True;'
+
+
+myServerAddress ='.'
+database = 'WebScraper'
+connection_string = 'Driver=SQL Server;Server={myServerAddress};Database={myDataBase};Trusted_Connection=True;'
 
 
 
@@ -24,6 +30,12 @@ response = requests.get(base_url)
 
 # Create BeautifulSoup object from the loaded page HTML
 html_soup = BeautifulSoup(response.text, 'html.parser')
+
+# csv_file = open('news_web_scraper.csv', 'w', newline='', encoding='utf-8')
+
+# csv_writer = csv.writer(csv_file)
+# csv_writer.writerow(['overline', 'headline', 'author', 'url'])
+
 article_dict = deque()
 
 # Find all the div elements with class "u-flex__item u-lastchild"
@@ -66,8 +78,8 @@ def get_stripped_text(element): #https://beautiful-soup-4.readthedocs.io/en/late
 try:
     for article in articles:
 
-        title_element = article.find('h3', {"class" : 'c-headline'})
-        title = get_stripped_text(title_element)
+        # title_element = article.find('h3', {"class" : 'c-headline'})
+        # title = get_stripped_text(title_element)
 
         url_element = article.find('a', {"class" : 'c-teaser__link'})
         url = base_url + url_element['href'] if url_element else None
@@ -85,7 +97,7 @@ try:
 
         # Create dictionary with extracted data
         article_data = {
-            "Title": title,
+            #"Title": title,
             "URL": url,
             "Overline": overlineText,
             "Headline": headlineText,
@@ -93,12 +105,19 @@ try:
         }
 
         article_dict.append(article_data)
+        #Write data to CSV file
+        # csv_writer.writerow([overlineText, headlineText, author, url])
 except Exception as e:
+    print(f"An error occurred: {str(e)}")
     article = None
+
+
+# finally:
+#     # Close the CSV file
+#     csv_file.close()
+
 
 # Print the extracted data in a nested dictionary format
 for article in article_dict:
     print(json.dumps(article, sort_keys=True, indent=4))
 
-# Quit the browser
-# driver.quit()
