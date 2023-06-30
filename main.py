@@ -3,13 +3,14 @@
 from database import configs
 from database import db
 from database import articleData
+import uuid
 
 #functions
 
 ###Create a new session with a session ID
 def generate_session_id():
-    pass
-
+    sql_1 =  '''INSERT INTO [dbo].[Sessions]([Executor]) VALUES('WebScraper'); SELECT @@IDENTITY;'''
+    return sql_1
 
 ##get all actives sites from the database
 def get_active_sites():
@@ -18,6 +19,12 @@ def get_active_sites():
 ###close the session and update the status in the database
 def close_session():
     pass
+
+###https://docs.python.org/3/library/uuid.html - create uuid4() to create a new session
+
+sessionID = generate_session_id()
+print("Session ID:", sessionID)
+
 
 
 # Read all actives sites
@@ -33,6 +40,10 @@ def close_session():
 # Close the session
 
 #from database.db import connect_db
+
+module = ''
+
+
 
 try:
 
