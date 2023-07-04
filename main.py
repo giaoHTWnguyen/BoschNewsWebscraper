@@ -53,7 +53,7 @@ try:
     print("Connect to the database")
     sites = db.queryData(connection, "SELECT Id, Name, URL, Module, Method, Configs FROM dbo.Sites WHERE Active = 1")
     print(sites)
-    print(sites)
+    
     # session = db.queryData(connection, generate_session_id())
     session = db.queryData(connection, "SELECT @@IDENTITY from dbo.Sessions;")
     print("Session-ID: " + session)
