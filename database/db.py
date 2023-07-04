@@ -29,7 +29,18 @@ def queryData(connection, sql: str): #Python Cursor Class = https://www.mcobject
     with connection.cursor() as crs:
         crs.execute(sql)
         return crs.fetchall()
-
+    
+def queryValue(connection, sql: str):
+    with connection.cursor() as crs:
+        crs.execute(sql)
+        return crs.fetchval()
+    
+def insertCommitData(connection, sql: str):
+    with connection.cursor() as crs:
+        crs.execute(sql)
+        connection.commit()
+      #  crs.execute(sql)
+        return crs.fetchall()
 ###functions
 
 ##init

@@ -3,7 +3,7 @@
 from database import configs
 from database import db
 from database import articleData
-import uuid
+import traceback
 #import pandas as pd
 
 #functions
@@ -45,7 +45,6 @@ print("Session ID:", sessionID)
 module = ''
 
 
-
 try:
 
     ###https://www.sqlnethub.com/blog/how-to-resolve-im002-microsoftodbc-driver-manager-data-source-name-not-found-and-no-default-driver-specified-0-sqldriverconnect/
@@ -55,10 +54,18 @@ try:
     print(sites)
     
     # session = db.queryData(connection, generate_session_id())
-    session = db.queryData(connection, "SELECT @@IDENTITY from dbo.Sessions;")
-    print("Session-ID: " + session)
+    '''
+    Insert a new row with executor value into [dbo].[Sessions] table, retriebe the identity value assigned to that row
+    SET NOCOUNT ON: Remove "X rows affected" message
+    SELECT @@Identity: retrieve last identity value generated for any table in current session
+    '''
+    session = db.queryValue(connection, "EXEC sp_executesql N'SET NOCOUNT ON; INSERT INTO [dbo].[Sessions]([Executor]) VALUES(''WebScraper Version 1.0''); SELECT @@IDENTITY'")
+    
+    print("Session-ID: " + str(session))  
     
 except Exception as ex:
+
+    traceback.print_exc(limit=1)
     print("Error: " + str(ex))
 
 finally:
