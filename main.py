@@ -4,12 +4,13 @@ from database import configs
 from database import db
 from database import articleData
 import uuid
+#import pandas as pd
 
 #functions
 
 ###Create a new session with a session ID
 def generate_session_id():
-    sql_1 =  '''INSERT INTO [dbo].[Sessions]([Executor]) VALUES('WebScraper'); SELECT @@IDENTITY;'''
+    sql_1 =  "INSERT INTO [dbo].[Sessions]([Executor]) VALUES('WebScraper'); SELECT @@IDENTITY;"
     return sql_1
 
 ##get all actives sites from the database
@@ -52,6 +53,10 @@ try:
     print("Connect to the database")
     sites = db.queryData(connection, "SELECT Id, Name, URL, Module, Method, Configs FROM dbo.Sites WHERE Active = 1")
     print(sites)
+    print(sites)
+    # session = db.queryData(connection, generate_session_id())
+    session = db.queryData(connection, "SELECT @@IDENTITY from dbo.Sessions;")
+    print("Session-ID: " + session)
     
 except Exception as ex:
     print("Error: " + str(ex))

@@ -25,7 +25,7 @@ def getSqlCommand(sql: str, **kwargs):
         sql = sql.replace("%<{a}>%", getSqlValue(kwargs[a], a.startswith('_')))
     return sql
 
-def queryData(connection, sql: str):
+def queryData(connection, sql: str): #Python Cursor Class = https://www.mcobject.com/docs/Content/Programming/Python/Classes/Cursor/execute.htm
     with connection.cursor() as crs:
         crs.execute(sql)
         return crs.fetchall()
