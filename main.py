@@ -51,17 +51,21 @@ try:
     connection = db.connect_db()
     print("Connect to the database")
     sites = db.queryData(connection, "SELECT Id, Name, URL, Module, Method, Configs FROM dbo.Sites WHERE Active = 1")
+    modules = db.queryData(connection, "SELECT Module FROM dbo.Sites WHERE Active = 1")
     print(sites)
+    print (modules)
     
     # session = db.queryData(connection, generate_session_id())
     '''
     Insert a new row with executor value into [dbo].[Sessions] table, retriebe the identity value assigned to that row
     SET NOCOUNT ON: Remove "X rows affected" message
     SELECT @@Identity: retrieve last identity value generated for any table in current session
+    #https://learn.microsoft.com/de-de/sql/relational-databases/system-stored-procedures/sp-executesql-transact-sql?view=sql-server-ver16
     '''
     session = db.queryValue(connection, "EXEC sp_executesql N'SET NOCOUNT ON; INSERT INTO [dbo].[Sessions]([Executor]) VALUES(''WebScraper Version 1.0''); SELECT @@IDENTITY'")
     
-    print("Session-ID: " + str(session))  
+    print("Session-ID: " + str(session))
+
     
 except Exception as ex:
 
