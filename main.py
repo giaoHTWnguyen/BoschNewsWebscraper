@@ -4,6 +4,11 @@ from database import configs
 from database import db
 from database import articleData
 import traceback
+
+import sys
+import os
+sys.path.append(os.path.dirname(__file__)+"/modules")   # modules IN path includieren damit werden die ladbaren Modules gefunden
+
 #import pandas as pd
 
 #functions
@@ -51,9 +56,7 @@ try:
     connection = db.connect_db()
     print("Connect to the database")
     sites = db.queryData(connection, "SELECT Id, Name, URL, Module, Method, Configs FROM dbo.Sites WHERE Active = 1")
-    modules = db.queryData(connection, "SELECT Module FROM dbo.Sites WHERE Active = 1")
-    print(sites)
-    print (modules)
+    #print(sites)
     
     # session = db.queryData(connection, generate_session_id())
     '''
@@ -66,7 +69,17 @@ try:
     
     print("Session-ID: " + str(session))
 
-    
+    #Switch out the module
+    for site in sites[:1]:
+        module = site.Module[:-3] # Namen endet mit .py
+        methode = site.Method
+        articles = []
+        code ='import '+module+'; articles = '+ module + '.' + methode + '(site.URL)'
+        print(code)
+        exec(code)
+        #Insert all articles into database
+        for article in articles:
+            print(article.headline)
 except Exception as ex:
 
     traceback.print_exc(limit=1)

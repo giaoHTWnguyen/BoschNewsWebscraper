@@ -1,5 +1,6 @@
 import pyodbc
-from database import configs  
+
+from  database import configs  
 
 def connect_db():
     connection_string = f'Driver={configs.db_driver};Server={configs.db_server};Database={configs.db_database};'

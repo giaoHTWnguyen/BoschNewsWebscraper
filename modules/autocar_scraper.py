@@ -38,6 +38,7 @@ for article in articles:
         "Datum": date
     }
     
+    
     article_dict.append(article_data)
 # Print in nested directionary
 
