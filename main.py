@@ -71,12 +71,12 @@ try:
 
     #Switch out the module
     for site in sites[:1]:
-        module = site.Module[:-3] # Namen endet mit .py
+        module = site.Module[:-3] # Namen endet mit .py, extract module name by removing last three characters (".py" extension) from module
         methode = site.Method
         articles = []
-        code ='import '+module+'; articles = '+ module + '.' + methode + '(site.URL)'
+        code ='import '+module+'; articles = '+ module + '.' + methode + '(site.URL)' #contain import statement and dynamic method call
         print(code)
-        exec(code)
+        exec(code) #execute function, import the module a
         #Insert all articles into database
         for article in articles:
             print(article.headline)
