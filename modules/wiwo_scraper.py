@@ -66,6 +66,7 @@ def scrape_wiwo(base_url):
             article_wiwo = articleData(
                 overline=overlineText,
                 headline=headlineText,
+                subline=None,
                 author=author,
                 content=None,
                 publicdate=None,

@@ -70,7 +70,7 @@ try:
     print("Session-ID: " + str(session))
 
     #Switch out the module
-    for site in sites[:1]:
+    for site in sites[:2]:
         module = site.Module[:-3] # Namen endet mit .py, extract module name by removing last three characters (".py" extension) from module
         methode = site.Method
         articles = []
