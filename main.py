@@ -68,18 +68,20 @@ try:
     session = db.queryValue(connection, "EXEC sp_executesql N'SET NOCOUNT ON; INSERT INTO [dbo].[Sessions]([Executor]) VALUES(''WebScraper Version 1.0''); SELECT @@IDENTITY'")
     
     print("Session-ID: " + str(session))
-
+    print(sites)
     #Switch out the module
-    for site in sites[:2]:
-        module = site.Module[:-3] # Namen endet mit .py, extract module name by removing last three characters (".py" extension) from module
-        methode = site.Method
-        articles = []
-        code ='import '+module+'; articles = '+ module + '.' + methode + '(site.URL)' #contain import statement and dynamic method call
-        print(code)
-        exec(code) #execute function, import the module a
-        #Insert all articles into database
-        for article in articles:
-            print(article.headline)
+    for site in sites: 
+        if site[1] == "Autonews":
+            module = site.Module[:-3] # Namen endet mit .py, extract module name by removing last three characters (".py" extension) from module
+            methode = site.Method
+            articles = []
+            code ='import '+module+'; articles = '+ module + '.' + methode + '(site.URL)' #contain import statement and dynamic method call
+            print(code)
+            exec(code) #execute function, import the module a
+            #Insert all articles into database
+            for article in articles:
+                print(article.url)
+                #db.queryData(connection, "INSERT INTO [dbo].[Articles]")
 except Exception as ex:
 
     traceback.print_exc(limit=1)
@@ -89,6 +91,6 @@ finally:
 
     connection.close()
     print("done.")
-
+ 
 
 #Generate Session ID
