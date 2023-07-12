@@ -13,35 +13,52 @@ def connect_db():
     connection = pyodbc.connect(connection_string)
     return connection
 
+#https://pynative.com/python-mysql-execute-parameterized-query-using-prepared-statement/
+
+#Sanitize and prevent sql injection
 def getSqlValue(value, withDelimiter: bool):
     if value is None:
         return 'NULL'
-    value = value.strip().replace("'", "''").replace('\n', "' + CHAR(10) + '").replace('\r', "' + CHAR(13) + '").replace('\t', "' + CHAR(9) + '") #prevent sql injection
-    if withDelimiter:
-        value = "'" + value + "'"
+    value = value.strip().replace( #trail whitespace
+        "'", "''").replace( #escape single quotes
+        '\n', "' + CHAR(10) + '").replace( #handle newline characters 
+        '\r', "' + CHAR(13) + '").replace( #handle return characters
+        '\t', "' + CHAR(9) + '") #handle tab characters
+    if withDelimiter: #add prefix 'N' and suffix ' to sanatized
+        value = "N'" + value + "'"
     return value
 
-def getSqlCommand(sql: str, **kwargs):
+#replace placeholders with provided values
+def getSqlCommand(sql: str, **kwargs): #kwargs: ductuibary containung values to replace the placeholders in SQL command
     for a in kwargs:
-        sql = sql.replace("%<{a}>%", getSqlValue(kwargs[a], a.startswith('_')))
+        sql = sql.replace("%<{a}>%", getSqlValue(kwargs[a], a.startswith('_'))) 
+        '''
+        replace '%<{a}>%' in sql with value by calling 'getSqlValue()' function 
+        with value from 'kwargs' and boolean to indictate wheter the ykey starts with an underscroe
+        '''
     return sql
 
-def queryData(connection, sql: str): #Python Cursor Class = https://www.mcobject.com/docs/Content/Programming/Python/Classes/Cursor/execute.htm
-    with connection.cursor() as crs:
-        crs.execute(sql)
-        return crs.fetchall()
-    
+# def queryData(connection, sql: str): 
+#     with connection.cursor() as crs:
+#         crs.execute(sql)
+#         return crs.fetchall()
+
+#Python Cursor Class = https://www.mcobject.com/docs/Content/Programming/Python/Classes/Cursor/execute.htm
+
 def queryValue(connection, sql: str):
-    with connection.cursor() as crs:
-        crs.execute(sql)
+    with connection.cursor() as crs: #use 'with' statement (context manager) to ensure database is closed after query is executed
+        #get cursor object from 'connection' using cursor()-method
+        crs.execute(sql)#execute SQL query on database
         return crs.fetchval()
     
-def insertCommitData(connection, sql: str):
-    with connection.cursor() as crs:
-        crs.execute(sql)
-        connection.commit()
-      #  crs.execute(sql)
+# def insertCommitData(connection, sql: str):
+#     with connection.cursor() as crs: 
+        
+#         crs.execute(sql) 
+#         connection.commit()
+#       #  crs.execute(sql) 
         return crs.fetchall()
+    
 ###functions
 
 ##init
