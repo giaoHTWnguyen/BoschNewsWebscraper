@@ -35,7 +35,7 @@ def scrape_autonews(base_url):
                     headline=None,
                     subline=None,
                     author=None,
-                    content=None,
+                    data=None,
                     publicdate=None,
                     url=url)
 

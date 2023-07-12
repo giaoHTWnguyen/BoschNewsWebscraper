@@ -50,7 +50,7 @@ def scrape_autocar(base_url):
                 headline=headlineText,
                 subline = subtext,
                 author=None,
-                content=None,
+                data=None,
                 publicdate=None,
                 url=url)
             
