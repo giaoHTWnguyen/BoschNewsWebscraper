@@ -61,13 +61,13 @@ def scrape_wiwo(base_url):
 
 
             author_element = article.find('div', {"class" : 'c-teaser__authors'})
-            author = get_stripped_text(author_element)
+            author_text = get_stripped_text(author_element)
 
             article_wiwo = articleData(
                 overline=overlineText,
                 headline=headlineText,
                 subline=None,
-                author=author,
+                author=author_text,
                 data=None,
                 publicdate=None,
                 url=url)
