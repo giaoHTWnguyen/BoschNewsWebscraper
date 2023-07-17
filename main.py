@@ -18,14 +18,6 @@ def generate_session_id():
     sql_1 =  "INSERT INTO [dbo].[Sessions]([Executor]) VALUES('WebScraper'); SELECT @@IDENTITY;"
     return sql_1
 
-##get all actives sites from the database
-def get_active_sites():
-    pass
-
-###close the session and update the status in the database
-def close_session():
-    pass
-
 # Read all actives sites
 
 #create a new session with session id
@@ -36,10 +28,7 @@ def close_session():
     #scrape the sites and store all the articles
     #store the articles in the database
 
-# Close the session
-
 #from database.db import connect_db
-
 module = ''
 
 try:
