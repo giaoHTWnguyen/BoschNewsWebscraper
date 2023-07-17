@@ -5,7 +5,7 @@ from collections import deque
 import traceback
 from database.articleData import articleData
 
-def scrape_autocar(base_url):
+def scrape_autocar(base_url, options):
 
     print("Methode scrape_autocar wird gestartet..")
     # Set up Base Url, send GET Request, create BeautifulSoup Object

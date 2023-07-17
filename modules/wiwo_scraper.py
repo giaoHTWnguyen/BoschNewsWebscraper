@@ -15,8 +15,8 @@ from database.articleData import articleData
 #Connect to SQL Server database
 
 
-def scrape_wiwo(base_url):
-    print ("Methode scrape_wiwo gestartet.." + base_url)
+def scrape_wiwo(base_url, options):
+    print ("Methode scrape_wiwo gestartet: url=" + base_url)
     article_objects = []
     myServerAddress ='.'
     mydatabase = 'WebScraper'
@@ -42,7 +42,6 @@ def scrape_wiwo(base_url):
             return text
         else:
             return None
-
 
     try:
         for article in articles:
@@ -90,7 +89,7 @@ def scrape_wiwo(base_url):
                 headline=headlineText,
                 subline=None,
                 author=author_text,
-                data=dataText,
+                content=dataText,
                 publicdate=None,
                 url=url)
 

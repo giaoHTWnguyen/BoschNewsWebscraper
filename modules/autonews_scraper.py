@@ -8,8 +8,8 @@ import traceback
 from database.articleData import articleData
 
 
-def scrape_autonews(base_url):
-    print ("Methode scrape_autonews wird gestartet.." + base_url)
+def scrape_autonews(base_url, options):
+    print ("Methode scrape_autonews wird gestartet.. URL=" + base_url)
     article_objects=[]
     response = requests.get(base_url)
     html_soup = BeautifulSoup(response.text, "html.parser")

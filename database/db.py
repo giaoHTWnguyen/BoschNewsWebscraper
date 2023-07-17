@@ -19,11 +19,7 @@ def connect_db():
 def getSqlValue(value, withDelimiter: bool):
     if value is None:
         return 'NULL'
-    value = value.strip().replace( #trail whitespace
-        "'", "''").replace( #escape single quotes
-        '\n', "' + CHAR(10) + '").replace( #handle newline characters 
-        '\r', "' + CHAR(13) + '").replace( #handle return characters
-        '\t', "' + CHAR(9) + '") #handle tab characters
+    value = value.strip().replace("'", "''") #trail whitespace        
     if withDelimiter: #add prefix 'N' and suffix ' to sanatize
         value = "N'" + value + "'"
     return value
@@ -35,7 +31,7 @@ def getSqlCommand(sql: str, **kwargs): #kwargs: ductuibary containung values to 
     with value from 'kwargs' and boolean to indictate wheter the ykey starts with an underscroe
     '''
     for a in kwargs:
-        print (a+": "+kwargs[a])
+        #print (a+": "+kwargs[a])
         sql = sql.replace("<%" + a +"%>", getSqlValue(kwargs[a], a.startswith('_'))) 
     #print(sql)
     return sql

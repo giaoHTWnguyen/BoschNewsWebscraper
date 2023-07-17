@@ -1,5 +1,6 @@
 #Entry point of program
 ###import modules and classes
+import constant
 from database import configs
 from database import db
 from database import articleData
@@ -30,13 +31,14 @@ def generate_session_id():
 
 #from database.db import connect_db
 module = ''
+print (constant.APP_NAME + " version " + constant.VERSION)
 
 try:
 
+    print("Connect to the database " + configs.db_database + " on server " + configs.db_server)
     ###https://www.sqlnethub.com/blog/how-to-resolve-im002-microsoftodbc-driver-manager-data-source-name-not-found-and-no-default-driver-specified-0-sqldriverconnect/
     connection = db.connect_db()
-    print("Connect to the database")
-    sites = db.queryData(connection, "SELECT Id, Name, URL, Module, Method, Configs FROM dbo.Sites WHERE Active = 1")
+    sites = db.queryData(connection, "SELECT Id, Name, URL, Module, Method, ISNULL(Configs, '') as Configs FROM dbo.Sites WHERE Active = 1")
     #print(sites)
     
     # session = db.queryData(connection, generate_session_id())
@@ -46,7 +48,7 @@ try:
     SELECT @@Identity: retrieve last identity value generated for any table in current session
     #https://learn.microsoft.com/de-de/sql/relational-databases/system-stored-procedures/sp-executesql-transact-sql?view=sql-server-ver16
     '''
-    sessionID = db.queryValue(connection, "EXEC sp_executesql N'SET NOCOUNT ON; INSERT INTO [dbo].[Sessions]([Executor]) VALUES(''WebScraper Version 1.0''); SELECT @@IDENTITY'")
+    sessionID = db.queryValue(connection, "EXEC dbo.CreateSession '" + constant.APP_NAME + " version " + constant.VERSION + "'")
     
     print("Session-ID: " + str(sessionID))
     #print(sites)
@@ -56,7 +58,7 @@ try:
         methode = site.Method
         
         articles = []
-        code ='import '+module+'; articles = '+ module + '.' + methode + '(site.URL)' #contain import statement and dynamic method call
+        code ='import '+module+'; articles = '+ module + '.' + methode + '(site.URL, site.Configs)' #contain import statement and dynamic method call
         exec(code) #execute function, import the module a
         #Insert all articles into database
         '''
@@ -67,9 +69,8 @@ try:
         '''
         for article in articles:
            
-            sql = db.getSqlCommand("""
-                INSERT INTO [dbo].[articles] (Site_Id, Session_Id, Overline, Headline, Subline, Author, Data, Publicdate, Url)
-                SELECT <%siteId%>, <%session%>, NULLIF(<%_overline%>, ''), NULLIF(<%_headline%>, ''), NULLIF(<%_subline%>, ''), NULLIF(<%_author%>, ''), NULLIF(<%_data%>, ''), NULLIF(<%_publicdate%>, ''), NULLIF(<%_url%>, '');
+            asql = db.getSqlCommand("""
+                EXEC dbo.CreateArticle <%siteId%>, <%session%>, <%_overline%>, <%_headline%>, <%_subline%>, <%_author%>, <%_publicdate%>, <%_url%>;
                 """,
                 siteId = str(site.Id),
                 session = str(sessionID),
@@ -77,11 +78,24 @@ try:
                 _headline = "{headline}".format(headline = article.headline),
                 _subline = "{subline}".format(subline = article.subline),
                 _author = "{author}".format(author = article.author), 
-                _data = "{data}".format(data = article.data),
                 _publicdate = "{publicdate}".format(publicdate = article.publicdate),
                 _url = "{url}".format(url = article.url)
             )
-            db.execCommand(connection, sql) #Run Queue with Cursor Commit
+            #print(asql)
+            articleId = db.queryValue(connection, asql) #Run Queue with Cursor Commit
+            lineIndex = 0
+            for contentLine in article.content:
+                if (not(contentLine is None) and contentLine != ""):
+                    psql = db.getSqlCommand("""
+                        INSERT INTO dbo.ArticleContents (article_Id, lineIndex, contentLine)
+                        VALUES(<%articleId%>, <%lineIndex%>, <%_contentLine%>)
+                        """,
+                        articleId = str(articleId),
+                        lineIndex = str(lineIndex),
+                        _contentLine = contentLine)
+                    #print(psql)
+                    db.execCommand(connection, psql)
+                    lineIndex = lineIndex + 1
         print("Done with Articles")
 except Exception as ex:
 
