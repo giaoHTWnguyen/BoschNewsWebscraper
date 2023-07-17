@@ -60,6 +60,7 @@ def scrape_wiwo(base_url, options):
 
 
             author_element = article.find('div', {"class" : 'c-teaser__authors'})
+            # if author_element is "" : article.find('div', {"class" : ''})
             author_text = get_stripped_text(author_element)
 
 
