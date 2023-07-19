@@ -18,43 +18,61 @@ def scrape_autocar(base_url, options):
     # Find all the div elements with class "details with-image"
     articles = html_soup.find_all('div', {"class": 'details with-image'})
 
+    def get_stripped_text(element): #https://beautiful-soup-4.readthedocs.io/en/latest/index.html?highlight=strip#get-text
+
+        if element:
+            text = element.text.strip()
+            #newString_text = text.replace('\n', '')
+
+            return text
+        else:
+            return None
+
 
     #iterate over articles, extract the title, url, text and pub-date 
     try:
         for article in articles:
 
-            headlineText = article.find('h3')
-            if headlineText:
-                headlineText = headlineText.text.strip()
+            headline_element = article.find('h3')
+            headlineText = get_stripped_text(headline_element)
 
             url = base_url + article.find('a')['href']
 
-            subtext = article.find('p', {"class": "standfirst"})
-            if subtext:
-                subtext = subtext.text.strip()
+            subline_element = article.find('p', {"class": "standfirst"})
+            sublineText = get_stripped_text(subline_element)
 
-            publicdate = article.find('div', {"class": "pub-date"})
-            if publicdate:
-                publicdate = publicdate.text.strip()
+            publicDate_element = article.find('div', {"class": "pub-date"})
+            publicDateText = get_stripped_text(publicDate_element)
        
-            #Create dictionary with extracted data
-            # article_data = {
-            #     "Titel": title,
-            #     "URL": url,
-            #     "Text": text,
-            #     "Datum": date
-            # }
-            
+            print(publicDateText)
+
+            dataText = ""
+
+            response_url = requests.get(url)
+            html_soup_url = BeautifulSoup(response_url.text, 'html.parser')
+
+            content = html_soup_url.find_all('div', {"class": 'field-item even'})
+
+            data_list = []
+
+            for div in content:
+                paragraphs = div.find_all('p')
+                data_list.extend(paragraphs)
+
+            dataText = [p.get_text() for p in data_list]
+
             article_autocar = articleData(
                 overline=None,
                 headline=headlineText,
-                subline = subtext,
+                subline = sublineText,
                 author=None,
-                data=None,
+                content=dataText,
                 publicdate=None,
                 url=url)
             
             article_objects.append(article_autocar)
+
+
         # Print in nested directionary
     except Exception as e:
         traceback.print_exc(limit=1)

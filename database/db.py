@@ -1,7 +1,7 @@
 import pyodbc
 
 from  database import configs  
-
+#https://learn.microsoft.com/en-us/ef/core/miscellaneous/connection-strings
 def connect_db():
     connection_string = f'Driver={configs.db_driver};Server={configs.db_server};Database={configs.db_database};'
     if not configs.db_username:
@@ -53,22 +53,3 @@ def queryValue(connection, sql: str):
         #get cursor object from 'connection' using cursor()-method
         crs.execute(sql)#execute SQL query on database
         return crs.fetchval() #return fetched value
-    
-# def insertCommitData(connection, sql: str):
-#     with connection.cursor() as crs: 
-        
-#         crs.execute(sql) 
-#         connection.commit()
-#       #  crs.execute(sql) 
-        return crs.fetchall()
-    
-###functions
-
-##init
-
-###store extracted articles in database
-
-###update the status of a session in a database
-
-
-###Close the connection
