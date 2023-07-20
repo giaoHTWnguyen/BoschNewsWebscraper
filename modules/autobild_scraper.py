@@ -12,7 +12,7 @@ from database.articleData import articleData
 #Connect to SQL Server database
 
 
-def scrape_wiwo(base_url, options):
+def scrape_autobild(base_url, options):
     print ("Methode scrape_wiwo gestartet: url=" + base_url)
     article_objects = []
     myServerAddress ='.'
@@ -26,7 +26,7 @@ def scrape_wiwo(base_url, options):
     article_dict = deque()
 
     # Find all the div elements with class "u-flex__item u-lastchild"
-    articles = html_soup.find_all('div', {"class": 'u-flex__item u-lastchild'})
+    articles = html_soup.find_all('section', {"class": 'teaserBlock'})
 
     # Iterate over articles, extract the title, URL, text, and author
 
@@ -46,24 +46,25 @@ def scrape_wiwo(base_url, options):
             # title_element = article.find('h3', {"class" : 'c-headline'})
             # title = get_stripped_text(title_element)
 
-            url_element = article.find('a', {"class" : 'c-teaser__link'})
-            url = base_url + url_element['href'] if url_element else None
+            url_element = article.select_one('section.teaserBlock a')['href']
+            url = url_element if url_element else None
 
-            overline_text_element = article.find('span', {"class" : 'c-overline'})
+            overline_text_element = article.find('p', {"class" : 'teaserBlock__headline'})
             overlineText = get_stripped_text(overline_text_element)
 
-            headline_text_element = article.find('span', {"class" : 'js-headline'})
+            headline_text_element = article.find('p', {"class" : 'teaserBlock__title'})
             headlineText = get_stripped_text(headline_text_element)
 
 
-            author_element = article.find('div', {"class" : 'c-teaser__authors'})
+            #author_element = article.find('div', {"class" : 'c-teaser__authors'})
             # if author_element is "" : article.find('div', {"class" : ''})
-            author_text = get_stripped_text(author_element)
+            #author_text = get_stripped_text(author_element)
 
 
             publicdate_element = article.find()
             publicdate_text = get_stripped_text(publicdate_element)
 
+            ''' 
             #scrape content
             dataText = ""
 
@@ -81,13 +82,13 @@ def scrape_wiwo(base_url, options):
                 data_list.extend(paragraphs)
 
             dataText = [p.get_text() for p in data_list]
-
+            '''
             article_wiwo = articleData(
                 overline=overlineText,
                 headline=headlineText,
                 subline=None,
-                author=author_text,
-                content=dataText,
+                author=None,
+                content=None,
                 publicdate=None,
                 url=url)
 
@@ -99,9 +100,6 @@ def scrape_wiwo(base_url, options):
         print(f"An error occurred: {str(e)}")
         article = None
 
-    # Print the extracted data in a nested dictionary format
-    # for article in article_dict:
-    #     print(json.dumps(article, sort_keys=True, indent=4))
     print ("Methode scrape_wiwo beendet..")
 
     return article_objects
