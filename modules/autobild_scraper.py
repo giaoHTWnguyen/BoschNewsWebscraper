@@ -64,31 +64,30 @@ def scrape_autobild(base_url, options):
             publicdate_element = article.find()
             publicdate_text = get_stripped_text(publicdate_element)
 
-            ''' 
+             
             #scrape content
             dataText = ""
 
             response_url = requests.get(url)
             html_soup_url = BeautifulSoup(response_url.text, 'html.parser')
             
-            content = html_soup_url.find_all('div', {"class": 'u-richtext'})
+            content = html_soup_url.find_all('div', {"class": 'paragraph'})
             ### if content empty use other class!!
 
             ###Scrape Content
             data_list = []
 
             for div in content:
-                paragraphs = div.find_all('p')
-                data_list.extend(paragraphs)
+                data_list.extend(div)
 
             dataText = [p.get_text() for p in data_list]
-            '''
+            
             article_wiwo = articleData(
                 overline=overlineText,
                 headline=headlineText,
                 subline=None,
                 author=None,
-                content=None,
+                content=dataText,
                 publicdate=None,
                 url=url)
 
