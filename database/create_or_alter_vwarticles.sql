@@ -1,6 +1,6 @@
-CREATE OR ALTER VIEW dbo.VwArticles
+CREATE OR ALTER VIEW dbo.VwArticles --create view if doesen't exist
 AS
-WITH cnt AS (
+WITH cnt AS (--calculate number of items and concatenate the items for each article 
 	SELECT [article_Id]
 		,COUNT(*) as ItemsCount
 		,STRING_AGG([ContentLine]
