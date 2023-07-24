@@ -68,7 +68,10 @@ try:
         into strings using formatting 'format' expression
         '''
         for article in articles:
-           
+            #print(article)
+            isValidated = db.validateData(connection, article)
+            if not isValidated:
+                continue
             asql = db.getSqlCommand("""
                 EXEC dbo.CreateArticle <%siteId%>, <%session%>, <%_overline%>, <%_headline%>, <%_subline%>, <%_author%>, <%_publicdate%>, <%_url%>;
                 """,
@@ -83,6 +86,8 @@ try:
             )
             #print(asql)
             articleId = db.queryValue(connection, asql) #Run Queue with Cursor Commit
+            if (articleId == 0): # no new aricle inserted
+                continue
             lineIndex = 0
             for contentLine in article.content:
                 if (not(contentLine is None) and contentLine != ""):

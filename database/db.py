@@ -1,6 +1,6 @@
 import pyodbc
 
-from  database import configs  
+from  database import articleData, configs  
 #https://learn.microsoft.com/en-us/ef/core/miscellaneous/connection-strings
 def connect_db():
     connection_string = f'Driver={configs.db_driver};Server={configs.db_server};Database={configs.db_database};'
@@ -53,3 +53,24 @@ def queryValue(connection, sql: str):
         #get cursor object from 'connection' using cursor()-method
         crs.execute(sql)#execute SQL query on database
         return crs.fetchval() #return fetched value
+
+def validateData(connection, article: articleData):
+    # tidy data by removing leading trailing whitespaces
+    article.overline = article.overline.strip()
+    article.headline = article.headline.strip()
+    article.subline = article.subline.strip()
+    article.url = article.url.strip()
+
+    # check data exists based on its hash value
+    # Hash value is calculated using the GetHashValue function defined in database
+    sql = getSqlCommand("SELECT Id FROM dbo.Articles WHERE HashValue = dbo.GetHashValue(<%_overline%>, <%_headline%>, <%_subline%>, <%_url%>);", 
+                        #Provide Placeholders using article properties for Hash Value
+                        _overline = article.overline,
+                        _headline = article.headline,
+                        _subline = article.subline,
+                        _url = article.url)
+    #Exectue query and retrieve the existing article ID (if found)
+    existingId = queryValue(connection, sql)
+    #If the existingId is None, means article data is not present in the database,
+    #data is considered vakudated (not a duplicate)
+    return existingId is None
