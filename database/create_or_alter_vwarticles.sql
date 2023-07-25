@@ -1,3 +1,6 @@
+USE WebScraper
+GO
+
 CREATE OR ALTER VIEW dbo.VwArticles --create view if doesen't exist
 AS
 WITH cnt AS (--calculate number of items and concatenate the items for each article 
