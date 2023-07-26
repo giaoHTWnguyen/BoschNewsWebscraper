@@ -74,3 +74,8 @@ def validateData(connection, article: articleData):
     #If the existingId is None, means article data is not present in the database,
     #data is considered vakudated (not a duplicate)
     return existingId is None
+
+def closeSession(connection, sessionID):
+    with connection.cursor() as crs:
+        crs.execute("EXEC [dbo].[CloseSession] @sessionID=?", sessionID)
+        #return crs.fetchval()

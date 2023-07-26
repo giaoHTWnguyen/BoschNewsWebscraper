@@ -5,19 +5,12 @@ from database import configs
 from database import db
 from database import articleData
 import traceback
+import datetime
+
 
 import sys
 import os
 sys.path.append(os.path.dirname(__file__)+"/modules")   # modules IN path includieren damit werden die ladbaren Modules gefunden
-
-#import pandas as pd
-
-#functions
-
-###Create a new session with a session ID
-def generate_session_id():
-    sql_1 =  "INSERT INTO [dbo].[Sessions]([Executor]) VALUES('WebScraper'); SELECT @@IDENTITY;"
-    return sql_1
 
 # Read all actives sites
 
@@ -39,11 +32,8 @@ try:
     ###https://www.sqlnethub.com/blog/how-to-resolve-im002-microsoftodbc-driver-manager-data-source-name-not-found-and-no-default-driver-specified-0-sqldriverconnect/
     connection = db.connect_db()
     sites = db.queryData(connection, "SELECT Id, Name, URL, Module, Method, ISNULL(Configs, '') as Configs FROM dbo.Sites WHERE Active = 1")
-    #print(sites)
-    
-    # session = db.queryData(connection, generate_session_id())
     '''
-    Insert a new row with executor value into [dbo].[Sessions] table, retriebe the identity value assigned to that row
+    Insert a new row with executor value into [dbo].[Sessions] table, retrieve the identity value assigned to that row
     SET NOCOUNT ON: Remove "X rows affected" message
     SELECT @@Identity: retrieve last identity value generated for any table in current session
     #https://learn.microsoft.com/de-de/sql/relational-databases/system-stored-procedures/sp-executesql-transact-sql?view=sql-server-ver16
@@ -102,15 +92,13 @@ try:
                     db.execCommand(connection, psql)
                     lineIndex = lineIndex + 1
         print("Done with Articles")
-except Exception as ex:
+except Exception as ex: 
 
     traceback.print_exc(limit=1)
     print("Error: " + str(ex))
 
 finally:
 
+    bsql = db.closeSession(connection, sessionID)
     connection.close()
     print("done.")
- 
-
-#Generate Session ID
