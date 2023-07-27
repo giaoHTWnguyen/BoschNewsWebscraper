@@ -84,21 +84,25 @@ def scrape_autocar(base_url, options):
                     publicDateText = None
                     #print("Empty Time")
 
+            author_class = html_soup_url.find('div', {"class": 'personality-author'})
+            if author_class is None:
+                author_element = None
+            else:
+                author_element = author_class.find('span', itemprop ='name')
+                author_text = get_stripped_text(author_element)
+
             content = html_soup_url.find_all('div', {"class": 'field-item even'})
-
             data_list = []
-
             for div in content:
                 paragraphs = div.find_all('p')
                 data_list.extend(paragraphs)
-
             dataText = [p.get_text() for p in data_list]
 
             article_autocar = articleData(
                 overline=None,
                 headline=headlineText,
                 subline = sublineText,
-                author=None,
+                author=author_text,
                 content=dataText,
                 publicdate=convertedDatetime,
                 url=url)

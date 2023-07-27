@@ -62,7 +62,6 @@ def scrape_wiwo(base_url, options):
 
 
             #scrape content
-            dataText = ""
             html_soup_url = None
             try:
                 response_url = requests.get(url)
@@ -81,7 +80,7 @@ def scrape_wiwo(base_url, options):
             else:
                 publicdate_element = timeTag['datetime']
                 publicdate_element = publicdate_element[0:10] + ' ' + publicdate_element[11:19]
-            print(publicdate_element)
+            
 
             content = html_soup_url.find_all('div', {"class": 'u-richtext'})
             ### if content empty use other class!!

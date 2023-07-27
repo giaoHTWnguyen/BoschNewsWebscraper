@@ -3,14 +3,6 @@ from collections import deque
 import requests
 import traceback
 from database.articleData import articleData
-#import articleData
-
-#Create a class Wiwoscraper and inizialize it
-
-
-
-#Connect to SQL Server database
-
 
 def scrape_autobild(base_url, options):
     print ("Methode scrape_wiwo gestartet: url=" + base_url)
@@ -23,28 +15,18 @@ def scrape_autobild(base_url, options):
     # Create BeautifulSoup object from the loaded page HTML
     html_soup = BeautifulSoup(response.text, 'html.parser')
 
-    article_dict = deque()
-
-    # Find all the div elements with class "u-flex__item u-lastchild"
     articles = html_soup.find_all('section', {"class": 'teaserBlock'})
 
     # Iterate over articles, extract the title, URL, text, and author
 
     def get_stripped_text(element): #https://beautiful-soup-4.readthedocs.io/en/latest/index.html?highlight=strip#get-text
-
         if element:
             text = element.text.strip()
-            #newString_text = text.replace('\n', '')
-
             return text
         else:
             return None
-
     try:
         for article in articles:
-
-            # title_element = article.find('h3', {"class" : 'c-headline'})
-            # title = get_stripped_text(title_element)
 
             url_element = article.select_one('section.teaserBlock a')['href']
             url = url_element if url_element else None
@@ -54,41 +36,47 @@ def scrape_autobild(base_url, options):
 
             headline_text_element = article.find('p', {"class" : 'teaserBlock__title'})
             headlineText = get_stripped_text(headline_text_element)
-
-
-            #author_element = article.find('div', {"class" : 'c-teaser__authors'})
-            # if author_element is "" : article.find('div', {"class" : ''})
-            #author_text = get_stripped_text(author_element)
-
-
-            publicdate_element = article.find()
-            publicdate_text = get_stripped_text(publicdate_element)
-
              
-            #scrape content
-            dataText = ""
-
-            response_url = requests.get(url)
-            html_soup_url = BeautifulSoup(response_url.text, 'html.parser')
+            #scrape the links
+            html_soup_url = None
+            try:
+                response_url = requests.get(url)
+                html_soup_url = BeautifulSoup(response_url.text, 'html.parser')
+            except Exception as ex:
+                # FEHLERMELDUNG
+                print(f"ERROR occurred: {str(ex)} on url={url}")
+                continue
+            if html_soup_url is None:
+                print(f"skip NOTHING on url={url}")
+                continue
             
-            content = html_soup_url.find_all('div', {"class": 'paragraph'})
-            ### if content empty use other class!!
+            timeTag = html_soup_url.find('time')
+            if timeTag is None:
+                publicdate_element = None
+            else:
+                publicdate_element = timeTag['datetime']
+            
+            author_tag = html_soup_url.find('div', {"class": 'authorList__name'})
+            if author_tag is None:
+                author_element = None
+            else:
+                author_element = author_tag.find('a')
+            author_text = get_stripped_text(author_element)
 
             ###Scrape Content
+            content = html_soup_url.find_all('div', {"class": 'paragraph'})
             data_list = []
-
             for div in content:
                 data_list.extend(div)
-
             dataText = [p.get_text() for p in data_list]
             
             article_wiwo = articleData(
                 overline=overlineText,
                 headline=headlineText,
                 subline=None,
-                author=None,
+                author=author_text,
                 content=dataText,
-                publicdate=None,
+                publicdate=publicdate_element,
                 url=url)
 
             article_objects.append(article_wiwo)
