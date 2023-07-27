@@ -1,9 +1,11 @@
+import datetime
 from bs4 import BeautifulSoup
 import requests
 import json
 from collections import deque
 import traceback
 from database.articleData import articleData
+from datetime import datetime
 
 def scrape_autocar(base_url, options):
 
@@ -28,10 +30,21 @@ def scrape_autocar(base_url, options):
         else:
             return None
 
+    def convertToDatetime(publicDateText):
+        dtelements = publicDateText.split(' ')
+        months = ["---", "January", "February", "March", "April", "May", "June", "July", "August"]
+        for (i, mname) in enumerate(months): #use enumerate function to retrieve index i and mname from months
+            dtelements[1] = dtelements[1].replace(mname, str(i))
 
-    #iterate over articles, extract the title, url, text and pub-date 
+        publicDateText = datetime(int(dtelements[2]), int(dtelements[1]), int(dtelements[0]), 0, 0, 0)
+        return publicDateText
+    #iterate over articles, extract the title, url, text and pub-date
+
+
     try:
         for article in articles:
+
+            isPublicDateMissing = False
 
             headline_element = article.find('h3')
             headlineText = get_stripped_text(headline_element)
@@ -44,12 +57,32 @@ def scrape_autocar(base_url, options):
             publicDate_element = article.find('div', {"class": "pub-date"})
             publicDateText = get_stripped_text(publicDate_element)
        
-            print(publicDateText)
+            # print(headlineText)
+            # print(publicDateText)
+
+            if publicDateText:
+                convertedDatetime = convertToDatetime(publicDateText=publicDateText)
+                #print(convertedDatetime)
+            else:
+                isPublicDateMissing = True
+
+            ###scrape publicdate via main page, if no publicdate is found and  headline is empty too, go into the page url and scrape it from class "personality-date"
+
 
             dataText = ""
 
             response_url = requests.get(url)
             html_soup_url = BeautifulSoup(response_url.text, 'html.parser')
+
+            if isPublicDateMissing:
+                publicDate_element = html_soup_url.find('div', {"class": 'personality-date'})
+                publicDateText = get_stripped_text(publicDate_element)
+                if publicDateText:
+                    convertedDatetime = convertToDatetime(publicDateText=publicDateText)
+                    #print(convertedDatetime)
+                else:
+                    publicDateText = None
+                    #print("Empty Time")
 
             content = html_soup_url.find_all('div', {"class": 'field-item even'})
 
@@ -67,7 +100,7 @@ def scrape_autocar(base_url, options):
                 subline = sublineText,
                 author=None,
                 content=dataText,
-                publicdate=None,
+                publicdate=convertedDatetime,
                 url=url)
             
             article_objects.append(article_autocar)

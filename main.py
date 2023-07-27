@@ -59,11 +59,14 @@ try:
         '''
         for article in articles:
             #print(article)
+            #print(article.publicdate)
             isValidated = db.validateData(connection, article)
             if not isValidated:
                 continue
             asql = db.getSqlCommand("""
-                EXEC dbo.CreateArticle <%siteId%>, <%session%>, <%_overline%>, <%_headline%>, <%_subline%>, <%_author%>, <%_publicdate%>, <%_url%>;
+                EXEC dbo.CreateArticle <%siteId%>, <%session%>, <%_overline%>, <%_headline%>, <%_subline%>, <%_author%>
+                                    , <%_publicdate%>
+                                    , <%_url%>;
                 """,
                 siteId = str(site.Id),
                 session = str(sessionID),
@@ -71,7 +74,7 @@ try:
                 _headline = "{headline}".format(headline = article.headline),
                 _subline = "{subline}".format(subline = article.subline),
                 _author = "{author}".format(author = article.author), 
-                _publicdate = "{publicdate}".format(publicdate = article.publicdate),
+                _publicdate = db.formatDateTime(article.publicdate),
                 _url = "{url}".format(url = article.url)
             )
             #print(asql)
@@ -93,9 +96,9 @@ try:
                     lineIndex = lineIndex + 1
         print("Done with Articles")
 except Exception as ex: 
-
     traceback.print_exc(limit=1)
-    print("Error: " + str(ex))
+    print(f"An error occurred: {str(ex)}")
+    
 
 finally:
 

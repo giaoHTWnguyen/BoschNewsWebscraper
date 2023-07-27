@@ -61,15 +61,28 @@ def scrape_wiwo(base_url, options):
             author_text = get_stripped_text(author_element)
 
 
-            publicdate_element = article.find()
-            publicdate_text = get_stripped_text(publicdate_element)
-
             #scrape content
             dataText = ""
+            html_soup_url = None
+            try:
+                response_url = requests.get(url)
+                html_soup_url = BeautifulSoup(response_url.text, 'html.parser')
+            except Exception as ex:
+                # FEHLERMELDUNG
+                print(f"ERROR occurred: {str(ex)} on url={url}")
+                continue
+            if html_soup_url is None:
+                print(f"skip NOTHING on url={url}")
+                continue
+            #publicdate_text = get_stripped_text(publicdate_element)
+            timeTag = html_soup_url.find('time')
+            if timeTag is None:
+                publicdate_element = None
+            else:
+                publicdate_element = timeTag['datetime']
+                publicdate_element = publicdate_element[0:10] + ' ' + publicdate_element[11:19]
+            print(publicdate_element)
 
-            response_url = requests.get(url)
-            html_soup_url = BeautifulSoup(response_url.text, 'html.parser')
-            
             content = html_soup_url.find_all('div', {"class": 'u-richtext'})
             ### if content empty use other class!!
 
@@ -88,7 +101,7 @@ def scrape_wiwo(base_url, options):
                 subline=None,
                 author=author_text,
                 content=dataText,
-                publicdate=None,
+                publicdate=publicdate_element,
                 url=url)
 
             article_objects.append(article_wiwo)

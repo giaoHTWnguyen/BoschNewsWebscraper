@@ -79,3 +79,8 @@ def closeSession(connection, sessionID):
     with connection.cursor() as crs:
         crs.execute("EXEC [dbo].[CloseSession] @sessionID=?", sessionID)
         #return crs.fetchval()
+
+def formatDateTime(dateobj):
+    if dateobj is None: return None
+    if isinstance(dateobj, str): return dateobj
+    return dateobj.strftime('%Y-%m-%d %H:%M:%S')
