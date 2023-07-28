@@ -32,7 +32,7 @@ def scrape_autocar(base_url, options):
 
     def convertToDatetime(publicDateText):
         dtelements = publicDateText.split(' ')
-        months = ["---", "January", "February", "March", "April", "May", "June", "July", "August"]
+        months = ["---", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
         for (i, mname) in enumerate(months): #use enumerate function to retrieve index i and mname from months
             dtelements[1] = dtelements[1].replace(mname, str(i))
 

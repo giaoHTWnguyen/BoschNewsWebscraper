@@ -61,6 +61,8 @@ def scrape_autobild(base_url, options):
                 author_element = None
             else:
                 author_element = author_tag.find('a')
+                if author_element is None:
+                    author_element = author_tag.find('span')
             author_text = get_stripped_text(author_element)
 
             ###Scrape Content
