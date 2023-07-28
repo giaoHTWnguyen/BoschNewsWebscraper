@@ -80,18 +80,17 @@ def scrape_wiwo(base_url, options):
             else:
                 publicdate_element = timeTag['datetime']
                 publicdate_element = publicdate_element[0:10] + ' ' + publicdate_element[11:19]
-            
+            if publicdate_element is None:
+                continue
 
             content = html_soup_url.find_all('div', {"class": 'u-richtext'})
             ### if content empty use other class!!
 
             ###Scrape Content
             data_list = []
-
             for div in content:
                 paragraphs = div.find_all('p')
                 data_list.extend(paragraphs)
-
             dataText = [p.get_text() for p in data_list]
 
             article_wiwo = articleData(
