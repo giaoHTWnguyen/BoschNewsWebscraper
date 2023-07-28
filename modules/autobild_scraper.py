@@ -3,6 +3,7 @@ from collections import deque
 import requests
 import traceback
 from database.articleData import articleData
+import time
 
 def scrape_autobild(base_url, options):
     print ("Methode scrape_wiwo gestartet: url=" + base_url)
@@ -10,12 +11,7 @@ def scrape_autobild(base_url, options):
     myServerAddress ='.'
     mydatabase = 'WebScraper'
     connection_string = 'Driver=SQL Server;Server={myServerAddress};Database={myDataBase};Trusted_Connection=True;'
-    #base_url = 'https://www.wiwo.de/unternehmen/auto/'
-    response = requests.get(base_url)
-    # Create BeautifulSoup object from the loaded page HTML
-    html_soup = BeautifulSoup(response.text, 'html.parser')
-
-    articles = html_soup.find_all('section', {"class": 'teaserBlock'})
+  
 
     # Iterate over articles, extract the title, URL, text, and author
 
@@ -25,7 +21,24 @@ def scrape_autobild(base_url, options):
             return text
         else:
             return None
+        
+    session = requests.Session()
     try:
+
+         #latest User Agent: https://www.whatismybrowser.com/guides/the-latest-user-agent/chrome
+        headers = {
+            'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+        }
+
+        #base_url = 'https://www.wiwo.de/unternehmen/auto/'
+        response = session.get(base_url, headers=headers)
+        time.sleep(1)
+
+        # Create BeautifulSoup object from the loaded page HTML
+        html_soup = BeautifulSoup(response.text, 'html.parser')
+
+        articles = html_soup.find_all('section', {"class": 'teaserBlock'})
+
         for article in articles:
 
             url_element = article.select_one('section.teaserBlock a')['href']
@@ -40,6 +53,7 @@ def scrape_autobild(base_url, options):
             #scrape the links
             html_soup_url = None
             try:
+                time.sleep(1)
                 response_url = requests.get(url)
                 html_soup_url = BeautifulSoup(response_url.text, 'html.parser')
             except Exception as ex:

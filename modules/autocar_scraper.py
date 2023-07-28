@@ -6,19 +6,12 @@ from collections import deque
 import traceback
 from database.articleData import articleData
 from datetime import datetime
+import time
 
 def scrape_autocar(base_url, options):
 
     print("Methode scrape_autocar wird gestartet..")
-    # Set up Base Url, send GET Request, create BeautifulSoup Object
-    ### autocar ###
-    #base_url = 'https://www.autocar.co.uk/'
-    article_objects = []
-    response = requests.get(base_url)
-    html_soup = BeautifulSoup(response.text, 'html.parser')
-
-    # Find all the div elements with class "details with-image"
-    articles = html_soup.find_all('div', {"class": 'details with-image'})
+    
 
     def get_stripped_text(element): #https://beautiful-soup-4.readthedocs.io/en/latest/index.html?highlight=strip#get-text
 
@@ -40,8 +33,28 @@ def scrape_autocar(base_url, options):
         return publicDateText
     #iterate over articles, extract the title, url, text and pub-date
 
-
+    session = requests.Session()
     try:
+
+        #latest User Agent: https://www.whatismybrowser.com/guides/the-latest-user-agent/chrome
+        headers = {
+            'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+        }
+
+        response = session.get(base_url, headers=headers)
+
+        time.sleep(1)
+
+        # Set up Base Url, send GET Request, create BeautifulSoup Object
+        ### autocar ###
+        #base_url = 'https://www.autocar.co.uk/'
+        article_objects = []
+        html_soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Find all the div elements with class "details with-image"
+        articles = html_soup.find_all('div', {"class": 'details with-image'})
+
+
         for article in articles:
 
             isPublicDateMissing = False
@@ -68,12 +81,14 @@ def scrape_autocar(base_url, options):
 
             ###scrape publicdate via main page, if no publicdate is found and  headline is empty too, go into the page url and scrape it from class "personality-date"
 
-
-            dataText = ""
-
-            response_url = requests.get(url)
-            html_soup_url = BeautifulSoup(response_url.text, 'html.parser')
-
+            try:
+                time.sleep(1)
+                response_url = requests.get(url)
+                html_soup_url = BeautifulSoup(response_url.text, 'html.parser')
+            except Exception as ex:
+                # FEHLERMELDUNG
+                print(f"ERROR occurred: {str(ex)} on url={url}")
+                continue
             if isPublicDateMissing:
                 publicDate_element = html_soup_url.find('div', {"class": 'personality-date'})
                 publicDateText = get_stripped_text(publicDate_element)

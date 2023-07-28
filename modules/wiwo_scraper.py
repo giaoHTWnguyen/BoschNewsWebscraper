@@ -3,6 +3,7 @@ from collections import deque
 import requests
 import traceback
 from database.articleData import articleData
+import time
 #import articleData
 
 #Create a class Wiwoscraper and inizialize it
@@ -19,16 +20,6 @@ def scrape_wiwo(base_url, options):
     mydatabase = 'WebScraper'
     connection_string = 'Driver=SQL Server;Server={myServerAddress};Database={myDataBase};Trusted_Connection=True;'
     #base_url = 'https://www.wiwo.de/unternehmen/auto/'
-    response = requests.get(base_url)
-    # Create BeautifulSoup object from the loaded page HTML
-    html_soup = BeautifulSoup(response.text, 'html.parser')
-
-    article_dict = deque()
-
-    # Find all the div elements with class "u-flex__item u-lastchild"
-    articles = html_soup.find_all('div', {"class": 'u-flex__item u-lastchild'})
-
-    # Iterate over articles, extract the title, URL, text, and author
 
     def get_stripped_text(element): #https://beautiful-soup-4.readthedocs.io/en/latest/index.html?highlight=strip#get-text
 
@@ -39,8 +30,29 @@ def scrape_wiwo(base_url, options):
             return text
         else:
             return None
-
+    session = requests.Session()
     try:
+
+        #latest User Agent: https://www.whatismybrowser.com/guides/the-latest-user-agent/chrome
+        headers = {
+            'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+        }
+
+        response = session.get(base_url, headers=headers)
+
+        time.sleep(1)
+
+        # Create BeautifulSoup object from the loaded page HTML
+        html_soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Find all the div elements with class "u-flex__item u-lastchild"
+        articles = html_soup.find_all('div', {"class": 'u-flex__item u-lastchild'})
+
+        # Iterate over articles, extract the title, URL, text, and author
+
+    
+
+    
         for article in articles:
 
             # title_element = article.find('h3', {"class" : 'c-headline'})
@@ -64,6 +76,8 @@ def scrape_wiwo(base_url, options):
             #scrape content
             html_soup_url = None
             try:
+                #add Delay before each request to scrape individual articles
+                time.sleep(1)
                 response_url = requests.get(url)
                 html_soup_url = BeautifulSoup(response_url.text, 'html.parser')
             except Exception as ex:
