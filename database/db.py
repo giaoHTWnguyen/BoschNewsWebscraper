@@ -80,7 +80,7 @@ def closeSession(connection, sessionID):
         crs.execute("EXEC [dbo].[CloseSession] @sessionID=?", sessionID)
         #return crs.fetchval()
 
-def formatDateTime(dateobj):
+def formatDateTime(dateobj): #Date and Time Formats
     if dateobj is None: return None
     if isinstance(dateobj, str): return dateobj
-    return dateobj.strftime('%Y-%m-%d %H:%M:%S')
+    return dateobj.strftime('%Y-%m-%d %H:%M') #https://www.ibm.com/docs/en/cmofz/10.1.0?topic=SSQHWE_10.1.0/com.ibm.ondemand.mp.doc/arsa0257.htm
