@@ -1,12 +1,11 @@
 from bs4 import BeautifulSoup
-from collections import deque
 import requests
 import traceback
 from database.articleData import articleData
 import time
 
 def scrape_autobild(base_url, options):
-    print ("Methode scrape_wiwo gestartet: url=" + base_url)
+    print ("Methode scrape_autobild gestartet: url=" + base_url)
     article_objects = []
     myServerAddress ='.'
     mydatabase = 'WebScraper'
@@ -49,7 +48,7 @@ def scrape_autobild(base_url, options):
 
             headline_text_element = article.find('p', {"class" : 'teaserBlock__title'})
             headlineText = get_stripped_text(headline_text_element)
-             
+            print(headlineText)
             #scrape the links
             html_soup_url = None
             try:

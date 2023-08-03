@@ -61,11 +61,14 @@ def scrape_autocar(base_url, options):
 
             headline_element = article.find('h3')
             headlineText = get_stripped_text(headline_element)
+            print(headlineText)
+
 
             url = base_url + article.find('a')['href']
 
             subline_element = article.find('p', {"class": "standfirst"})
             sublineText = get_stripped_text(subline_element)
+            
 
             publicDate_element = article.find('div', {"class": "pub-date"})
             publicDateText = get_stripped_text(publicDate_element)
