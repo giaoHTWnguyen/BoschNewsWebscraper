@@ -66,7 +66,7 @@ def scrape_wiwo(base_url, options):
 
             headline_text_element = article.find('span', {"class" : 'js-headline'})
             headlineText = get_stripped_text(headline_text_element)
-
+            print(headlineText)
 
             author_element = article.find('div', {"class" : 'c-teaser__authors'})
             # if author_element is "" : article.find('div', {"class" : ''})

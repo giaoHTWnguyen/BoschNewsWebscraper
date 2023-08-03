@@ -1,6 +1,6 @@
 import pyodbc
+from  database import articleData, configs
 
-from  database import articleData, configs  
 #https://learn.microsoft.com/en-us/ef/core/miscellaneous/connection-strings
 def connect_db():
     connection_string = f'Driver={configs.db_driver};Server={configs.db_server};Database={configs.db_database};'
@@ -25,10 +25,10 @@ def getSqlValue(value, withDelimiter: bool):
     return value
 
 #replace placeholders with provided values
-def getSqlCommand(sql: str, **kwargs): #kwargs: ductuibary containung values to replace the placeholders in SQL command
+def getSqlCommand(sql: str, **kwargs): #kwargs: dictionary containing values to replace the placeholders in SQL command
     '''
     replace '<%{a}%>' in sql with value by calling 'getSqlValue()' function 
-    with value from 'kwargs' and boolean to indictate wheter the ykey starts with an underscroe
+    with value from 'kwargs' and boolean to indictate wheter the key starts with an underscore
     '''
     for a in kwargs:
         #print (a+": "+kwargs[a])
