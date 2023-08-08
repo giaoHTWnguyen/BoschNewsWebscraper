@@ -10,7 +10,6 @@ def scrape_autobild(base_url, options):
     myServerAddress ='.'
     mydatabase = 'WebScraper'
     connection_string = 'Driver=SQL Server;Server={myServerAddress};Database={myDataBase};Trusted_Connection=True;'
-  
 
     # Iterate over articles, extract the title, URL, text, and author
 
@@ -96,7 +95,6 @@ def scrape_autobild(base_url, options):
 
             article_objects.append(article_wiwo)
 
-           
     except Exception as e:
         traceback.print_exc(limit=1)
         print(f"An error occurred: {str(e)}")
