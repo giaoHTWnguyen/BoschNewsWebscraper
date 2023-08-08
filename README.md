@@ -12,3 +12,5 @@ To manage the SQL Server and access the database, you will need the SQL Server M
 Inside SSMS, create a new Database: WebScraper. Afterwards drag and drop the sql-script "Webscraper-full.sql" into the database, so that it will create all the tables.
 
 To run the program, you need to adjust the configs.py file of the program. Inside that file are the configuration, which you connect with the database. Most of the time you don't need to change anything, but the db_server should have the same name as your PC.
+
+In the database inside the Views folder you can select the dbo.VwArticles to see the output of the Web Scraping extraction.
