@@ -107,7 +107,7 @@ def scrape_autocar(base_url, options):
                 author_element = None
             else:
                 author_element = author_class.find('span', itemprop ='name')
-                author_text = get_stripped_text(author_element)
+            author_text = get_stripped_text(author_element)
 
             content = html_soup_url.find_all('div', {"class": 'field-item even'})
             data_list = []
